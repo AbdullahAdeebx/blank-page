@@ -3,16 +3,164 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blank Green Screen</title>
+    <title>Color Screen</title>
     <style>
         body {
             margin: 0;
-            background-color: #00FF00; /* Bright green */
+            background-color: #00FF00;
             height: 100vh;
             overflow: hidden;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+        #instructions {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(255, 255, 255, 0.95);
+            color: #333;
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            z-index: 1000;
+            display: none;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            max-width: 90%;
+            width: 400px;
+            backdrop-filter: blur(10px);
+        }
+        #instructions.show {
+            display: block;
+            animation: fadeOut 3s forwards;
+        }
+        @keyframes fadeOut {
+            0% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            70% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            100% { opacity: 0; transform: translate(-50%, -50%) scale(0.95); }
+        }
+        .color-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .color-item {
+            background: rgba(0, 0, 0, 0.05);
+            padding: 10px;
+            border-radius: 12px;
+            font-size: 1em;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .color-item:hover {
+            background: rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+        .color-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        h1 {
+            margin: 0 0 20px 0;
+            font-size: 1.8em;
+            color: #333;
+            font-weight: 600;
+        }
+        .subtitle {
+            color: #666;
+            margin-bottom: 20px;
+            font-size: 1.1em;
+        }
+        @media (max-width: 480px) {
+            #instructions {
+                padding: 20px;
+                width: 85%;
+            }
+            .color-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+            .color-item {
+                font-size: 0.9em;
+                padding: 8px;
+            }
+            h1 {
+                font-size: 1.5em;
+            }
+            .subtitle {
+                font-size: 1em;
+            }
         }
     </style>
 </head>
 <body>
+    <div id="instructions">
+        <h1>Color Screen</h1>
+        <div class="subtitle">Click anywhere for random color</div>
+        <div class="subtitle">Type first letter for specific color:</div>
+        <div class="color-grid">
+            <div class="color-item"><span class="color-dot" style="background: #FF0000"></span>r - Red</div>
+            <div class="color-item"><span class="color-dot" style="background: #00FF00"></span>g - Green</div>
+            <div class="color-item"><span class="color-dot" style="background: #0000FF"></span>b - Blue</div>
+            <div class="color-item"><span class="color-dot" style="background: #FFFF00"></span>y - Yellow</div>
+            <div class="color-item"><span class="color-dot" style="background: #800080"></span>p - Purple</div>
+            <div class="color-item"><span class="color-dot" style="background: #FFA500"></span>o - Orange</div>
+            <div class="color-item"><span class="color-dot" style="background: #FFFFFF"></span>w - White</div>
+            <div class="color-item"><span class="color-dot" style="background: #000000"></span>k - Black</div>
+            <div class="color-item"><span class="color-dot" style="background: #00FFFF"></span>c - Cyan</div>
+            <div class="color-item"><span class="color-dot" style="background: #FF00FF"></span>m - Magenta</div>
+            <div class="color-item"><span class="color-dot" style="background: #00FF00"></span>l - Lime</div>
+            <div class="color-item"><span class="color-dot" style="background: #008080"></span>t - Teal</div>
+            <div class="color-item"><span class="color-dot" style="background: #000080"></span>n - Navy</div>
+            <div class="color-item"><span class="color-dot" style="background: #EE82EE"></span>v - Violet</div>
+            <div class="color-item"><span class="color-dot" style="background: #C0C0C0"></span>s - Silver</div>
+        </div>
+    </div>
+
+    <script>
+        const colors = {
+            'r': '#FF0000', 'g': '#00FF00', 'b': '#0000FF', 'y': '#FFFF00',
+            'p': '#800080', 'o': '#FFA500', 'w': '#FFFFFF', 'k': '#000000',
+            'c': '#00FFFF', 'm': '#FF00FF', 'l': '#00FF00', 't': '#008080',
+            'n': '#000080', 'v': '#EE82EE', 's': '#C0C0C0'
+        };
+
+        // Random color generator
+        function getRandomColor() {
+            const letters = '0123456789ABCDEF';
+            let color = '#';
+            for (let i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
+        }
+
+        // Show instructions on first load
+        const instructions = document.getElementById('instructions');
+        instructions.classList.add('show');
+        setTimeout(() => {
+            instructions.classList.remove('show');
+        }, 3000);
+
+        // Click handler
+        document.body.addEventListener('click', () => {
+            document.body.style.backgroundColor = getRandomColor();
+        });
+
+        // Key press handler
+        document.addEventListener('keydown', (e) => {
+            const key = e.key.toLowerCase();
+            if (colors[key]) {
+                document.body.style.backgroundColor = colors[key];
+            }
+        });
+    </script>
 </body>
 </html>
